@@ -1,7 +1,7 @@
 import { Trainer } from './Trainer';
 
 export class Team {
-    private trainers:Array<Trainer> = new Array();
+    trainers:Array<Trainer> = new Array();
 
     public constructor() {
     }

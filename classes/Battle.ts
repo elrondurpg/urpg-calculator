@@ -1,26 +1,25 @@
 import { BattleFrame } from './BattleFrame'
 import { Team } from './Team';
+import { PokemonBuilder } from '../builders/PokemonBuilder';
+import { BattleAttack } from './BattleAttack';
+import { UrpgClientBuilder } from '../builders/UrpgClientBuilder';
+import { UrpgClient } from 'urpg.js';
+import * as request from "request-promise-native";
+import { BattleRules } from './BattleRules';
 
 export class Battle { 
-    static battleTypes:object = [ "Singles", "Doubles", "Triples", "Rotation", 
-                                    "Multi", "Battle Royale", "FFA" ];
-    private battleType:string = "Singles";
+    rules:BattleRules;
+    teams:Array<Team>;
+    currentFrame:BattleFrame;
+    frames:Array<BattleFrame>;
 
-    static teamTypes:object = [ "Open", "Full", "Preview" ];
-    private teamType:string = "Open";
-
-    static validNumPokemonPerTrainer:object = [ 1, 2, 3, 4, 5, 6 ];
-    private pokemonPerTrainer:number = 3;
-    private teams:Array<Team>;
-
-    private numberOfTeams:number;
-    private trainersPerTeam:number;
-    
-    private currentFrame:BattleFrame;
-    private frames:Array<BattleFrame>;
+    server:UrpgClient;
+    attacks:Map<string, BattleAttack>;
 
     public constructor() {
+        this.server = UrpgClientBuilder.getInstance();
         this.chooseBattleType();
+        this.loadAttacks();
     }
 
     chooseBattleType() {
@@ -55,9 +54,34 @@ export class Battle {
         this.teams.push(team);
     }
 
+    start() {
+        this.currentFrame = new BattleFrame(this);
+        this.setActivePokemon();    
+        this.currentFrame.initialize();
+    }
+
+    setActivePokemon() {
+        // TODO implement logic that changes active Pokemon based on rules/leads
+
+        this.teams.forEach(team => {
+            team.trainers.forEach(trainer => {
+                
+            })
+        })
+    }
+
+    loadAttacks() {
+        request.get({
+            uri: "https://pokemonurpg.com:8443/attacks"
+        }).then((data) => {
+            console.log("Loaded attack data");
+            console.log(data);
+        })
+    }
+
     getTeams() { return this.teams; }
 
-    print() {
-        console.log(this.currentFrame);
+    execute() {
+        this.currentFrame.execute();
     }
 }

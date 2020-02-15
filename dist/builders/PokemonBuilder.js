@@ -1,13 +1,27 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const UrpgClientService_1 = require("../services/UrpgClientService");
 const BattlePokemon_1 = require("../classes/BattlePokemon");
-const UrpgClientBuilder_1 = require("./UrpgClientBuilder");
 class PokemonBuilder {
-    constructor(name) {
-        this.server = UrpgClientBuilder_1.UrpgClientBuilder.getInstance();
+    constructor(basePokemonName) {
+        this.server = UrpgClientService_1.UrpgClientService.getInstance();
         this.pokemon = new BattlePokemon_1.BattlePokemon();
-        this.server.pokemon.get(name).then((data) => {
-            this.pokemon.initialize(data);
+        this.basePokemonName = basePokemonName;
+    }
+    build() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let basePokemon = yield this.server.getPokemon(this.basePokemonName);
+            this.pokemon.initialize(basePokemon);
+            return this.pokemon;
         });
     }
     withAbility(ability) {
@@ -19,10 +33,6 @@ class PokemonBuilder {
     withItem(item) {
         return this;
     }
-    build() {
-        return this.pokemon;
-    }
 }
 exports.PokemonBuilder = PokemonBuilder;
-PokemonBuilder.nextIndex = 0;
 //# sourceMappingURL=PokemonBuilder.js.map

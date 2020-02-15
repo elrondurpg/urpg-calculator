@@ -1,83 +1,50 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const BattleAttack_1 = require("./BattleAttack");
 class BattlePokemon {
     constructor() {
-        this.attacks = new Array();
-        this.currentAttackBoost = 0;
-        this.currentDefenseBoost = 0;
-        this.currentSpecialAttackBoost = 0;
-        this.currentSpecialDefenseBoost = 0;
-        this.currentSpeedBoost = 0;
-        this.statuses = new Array();
-        this.id = BattlePokemon.nextId++;
+        this.pp = new Map();
+        this.statuses = new Map();
     }
     initialize(pokemon) {
-        // TODO switch this if Zoroark
-        this.name = this.currentName = pokemon.name;
-        this.type1 = this.currentType1 = pokemon.type1;
-        this.type2 = this.currentType2 = pokemon.type2;
-        pokemon.attacks.forEach(attack => {
-            let newAttack = new BattleAttack_1.BattleAttack();
-            newAttack.initialize(attack);
-            this.attacks.push(newAttack);
-        });
-        this.abilities = pokemon.abilities;
-        this.currentAbility = this.abilities[0];
-        this.alteredForms = pokemon.alteredForms;
-        this.megaEvolutions = pokemon.megaEvolutions;
-        this.hp = this.currentHp = pokemon.hp;
-        this.attack = this.currentAttack = pokemon.attack;
-        this.defense = this.currentDefense = pokemon.defense;
-        this.specialAttack = this.currentSpecialAttack = pokemon.specialAttack;
-        this.specialDefense = this.currentSpecialDefense = pokemon.specialDefense;
-        this.speed = this.currentSpeed = pokemon.speed;
+        this.basePokemon = pokemon;
+        this.name = pokemon.name;
+        this.type1 = pokemon.type1;
+        this.type2 = pokemon.type2;
+        this.hp = pokemon.hp;
+        this.attack = pokemon.attack;
+        this.defense = pokemon.defense;
+        this.specialAttack = pokemon.specialAttack;
+        this.specialDefense = pokemon.specialDefense;
+        this.speed = pokemon.speed;
         this.weight = pokemon.weight;
     }
-    getId() { return this.id; }
+    getHpPercent() {
+        return this.hp / this.basePokemon.hp * 100;
+    }
     clone() {
         let pokemon = new BattlePokemon();
-        pokemon.id = this.id;
+        pokemon.basePokemon = this.basePokemon;
         pokemon.name = this.name;
-        pokemon.currentName = this.currentName;
-        pokemon.type1 = this.type1;
-        pokemon.currentType1 = this.currentType1;
-        pokemon.type2 = this.type2;
-        pokemon.currentType2 = this.currentType2;
-        pokemon.currentType3 = this.currentType3;
-        this.attacks.forEach(attack => {
-            pokemon.attacks.push(attack.clone());
-        });
-        pokemon.abilities = this.abilities;
-        pokemon.currentAbility = this.currentAbility;
-        pokemon.alteredForms = this.alteredForms;
-        pokemon.megaEvolutions = this.megaEvolutions;
-        pokemon.hp = this.hp;
-        pokemon.currentHp = this.currentHp;
-        pokemon.attack = this.attack;
-        pokemon.currentAttack = this.attack;
-        pokemon.currentAttackBoost = this.currentAttackBoost;
-        pokemon.defense = this.defense;
-        pokemon.currentDefense = this.currentDefense;
-        pokemon.currentDefenseBoost = this.currentDefenseBoost;
-        pokemon.specialAttack = this.specialAttack;
-        pokemon.currentSpecialAttack = this.currentSpecialAttack;
-        pokemon.currentSpecialAttackBoost = this.currentSpecialAttackBoost;
-        pokemon.specialDefense = this.specialDefense;
-        pokemon.currentSpecialDefense = this.currentSpecialDefense;
-        pokemon.currentSpecialDefenseBoost = this.currentSpecialDefenseBoost;
-        pokemon.speed = this.speed;
-        pokemon.currentSpeed = this.currentSpeed;
-        pokemon.currentSpeedBoost = this.currentSpeedBoost;
-        pokemon.weight = this.weight;
         pokemon.gender = this.gender;
-        pokemon.currentItem = this.currentItem.clone();
-        this.statuses.forEach(status => {
-            pokemon.statuses.push(status.clone());
+        pokemon.ability = this.ability;
+        pokemon.type1 = this.type1;
+        pokemon.type2 = this.type2;
+        pokemon.type3 = this.type3;
+        pokemon.weight = this.weight;
+        pokemon.hp = this.hp;
+        pokemon.attack = this.attack;
+        pokemon.defense = this.defense;
+        pokemon.specialAttack = this.specialAttack;
+        pokemon.specialDefense = this.specialDefense;
+        pokemon.speed = this.speed;
+        this.pp.forEach((value, key) => {
+            pokemon.pp.set(key, value);
+        });
+        this.statuses.forEach((value, key) => {
+            pokemon.statuses.set(key, value);
         });
         return pokemon;
     }
 }
 exports.BattlePokemon = BattlePokemon;
-BattlePokemon.nextId = 0;
 //# sourceMappingURL=BattlePokemon.js.map

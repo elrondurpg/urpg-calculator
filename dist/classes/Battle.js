@@ -1,12 +1,24 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const BattleFrame_1 = require("./BattleFrame");
 const Team_1 = require("./Team");
+const UrpgClientBuilder_1 = require("../builders/UrpgClientBuilder");
+const request = __importStar(require("request-promise-native"));
 class Battle {
     constructor() {
         this.battleType = "Singles";
         this.teamType = "Open";
-        this.pokemonPerTrainer = 3;
+        this.pokemonPerTrainer = 1;
+        this.server = UrpgClientBuilder_1.UrpgClientBuilder.getInstance();
         this.chooseBattleType();
+        this.loadAttacks();
     }
     chooseBattleType() {
         if (this.battleType != "Battle Royale" && this.battleType != "FFA") {
@@ -36,9 +48,29 @@ class Battle {
         team.initTrainers(this.trainersPerTeam, this.pokemonPerTrainer);
         this.teams.push(team);
     }
+    start() {
+        this.currentFrame = new BattleFrame_1.BattleFrame(this);
+        this.setActivePokemon();
+        this.currentFrame.initialize();
+    }
+    setActivePokemon() {
+        // TODO implement logic that changes active Pokemon based on rules/leads
+        this.teams.forEach(team => {
+            team.trainers.forEach(trainer => {
+            });
+        });
+    }
+    loadAttacks() {
+        request.get({
+            uri: "https://pokemonurpg.com:8443/attacks"
+        }).then((data) => {
+            console.log("Loaded attack data");
+            console.log(data);
+        });
+    }
     getTeams() { return this.teams; }
-    print() {
-        console.log(this.currentFrame);
+    execute() {
+        this.currentFrame.execute();
     }
 }
 exports.Battle = Battle;

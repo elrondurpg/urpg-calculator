@@ -1,10 +1,9 @@
 import { BattlePokemon } from './BattlePokemon';
-import { PokemonBuilder } from '../builders/PokemonBuilder';
 
 export class Trainer {
-    private name:string;
-    private pokemon:Array<BattlePokemon> = new Array();
-    private activePokemon:Array<number> = new Array();
+    private name:string = "Test";
+    pokemon:Array<BattlePokemon> = new Array();
+    activePokemon:Array<number> = new Array();
 
     public constructor() {
 
@@ -17,17 +16,6 @@ export class Trainer {
         }
     }
 
-    getPokemon(id:number) {
-        console.log("searching for a Pokemon with id " + id);
-        this.pokemon.forEach(pkmn => {
-            console.log("checking Pokemon:");
-            console.log(pkmn);
-            if (pkmn.getId() == id) {
-                return pkmn;
-            } 
-        });
-    }
-
     setPokemon() {
 
     }
@@ -38,6 +26,11 @@ export class Trainer {
         trainer.name = this.name;
         this.pokemon.forEach(pokemon => {
             trainer.pokemon.push(pokemon.clone());
+        });
+
+        trainer.activePokemon = new Array<number>();
+        this.activePokemon.forEach(id => {
+            trainer.activePokemon.push(id);
         })
 
         return trainer;

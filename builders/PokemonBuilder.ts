@@ -1,35 +1,33 @@
-import { BattlePokemon, Gender } from '../classes/BattlePokemon';
-import { Item } from '../classes/Item';
-import { UrpgClient } from 'urpg.js';
-import { UrpgClientBuilder } from './UrpgClientBuilder';
+import { UrpgClientService } from '../services/UrpgClientService';
+import { BattlePokemon } from '../classes/BattlePokemon';
 
 export class PokemonBuilder {
-    private static nextIndex:number = 0;
-    private server:UrpgClient;
+    private server:UrpgClientService;
     private pokemon:BattlePokemon;
+    private basePokemonName:string;
 
-    public constructor (name) {
-        this.server = UrpgClientBuilder.getInstance();
+    public constructor (basePokemonName:string) {
+        this.server = UrpgClientService.getInstance();
         this.pokemon = new BattlePokemon();
-        this.server.pokemon.get(name).then((data) => {
-            this.pokemon.initialize(data);
-        });
+        this.basePokemonName = basePokemonName;
+    }
+
+    async build() {
+        let basePokemon = await this.server.getPokemon(this.basePokemonName);
+        this.pokemon.initialize(basePokemon);
+        return this.pokemon;
     }
 
     withAbility(ability:string) {
         return this;
     }
 
-    withGender(gender:Gender) {
+    withGender(gender:string) {
         return this;
     }
 
     withItem(item:string) {
         return this;
-    }
-
-    build() {
-        return this.pokemon;
     }
 
 }

@@ -16,6 +16,11 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
+    "fs": "0.0.1-security",
+    "net": "^1.0.2",
+    "rename": "^1.0.4",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.8",
     "tslint": "^6.0.0",
     "typescript": "^3.7.5"
   }
