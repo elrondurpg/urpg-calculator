@@ -43,7 +43,7 @@ export class Battle {
             this.trainersPerTeam = 2;
         }
 
-        this.teams = new Array();
+        this.teams = new Array<Team>();
         for (let i = 0; i < numberOfTeams; i++) {
             this.teams.push(new Team(this.trainersPerTeam, this.pokemonPerTrainer));
         }

@@ -1,16 +1,17 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const BattleFrame_1 = require("./BattleFrame");
 const Team_1 = require("./Team");
 const UrpgClientBuilder_1 = require("../builders/UrpgClientBuilder");
-const request = __importStar(require("request-promise-native"));
 class Battle {
     constructor() {
         this.battleType = "Singles";
@@ -18,54 +19,40 @@ class Battle {
         this.pokemonPerTrainer = 1;
         this.server = UrpgClientBuilder_1.UrpgClientBuilder.getInstance();
         this.chooseBattleType();
-        this.loadAttacks();
     }
     chooseBattleType() {
-        if (this.battleType != "Battle Royale" && this.battleType != "FFA") {
-            this.numberOfTeams = 2;
-        }
-        else if (this.battleType == "Battle Royale") {
-            this.numberOfTeams = 4;
+        let numberOfTeams = 2;
+        if (this.battleType == "Battle Royale") {
+            numberOfTeams = 4;
         }
         else if (this.battleType == "FFA") {
-            this.numberOfTeams = 6;
+            numberOfTeams = 6;
         }
-        if (this.battleType != "Multi") {
-            this.trainersPerTeam = 1;
-        }
-        else if (this.battleType == "Multi") {
+        this.trainersPerTeam = 1;
+        if (this.battleType == "Multi") {
             this.trainersPerTeam = 2;
         }
         this.teams = new Array();
-        for (let i = 0; i < this.numberOfTeams; i++) {
-            let team = new Team_1.Team();
-            team.initTrainers(this.trainersPerTeam, this.pokemonPerTrainer);
-            this.teams.push(team);
+        for (let i = 0; i < numberOfTeams; i++) {
+            this.teams.push(new Team_1.Team(this.trainersPerTeam, this.pokemonPerTrainer));
         }
     }
     addFfaTrainer() {
-        let team = new Team_1.Team();
-        team.initTrainers(this.trainersPerTeam, this.pokemonPerTrainer);
-        this.teams.push(team);
+        this.teams.push(new Team_1.Team(this.trainersPerTeam, this.pokemonPerTrainer));
     }
     start() {
-        this.currentFrame = new BattleFrame_1.BattleFrame(this);
-        this.setActivePokemon();
-        this.currentFrame.initialize();
-    }
-    setActivePokemon() {
-        // TODO implement logic that changes active Pokemon based on rules/leads
-        this.teams.forEach(team => {
-            team.trainers.forEach(trainer => {
-            });
+        return __awaiter(this, void 0, void 0, function* () {
+            this.currentFrame = new BattleFrame_1.BattleFrame(this);
+            yield this.loadPokemon();
+            this.currentFrame.initialize();
         });
     }
-    loadAttacks() {
-        request.get({
-            uri: "https://pokemonurpg.com:8443/attacks"
-        }).then((data) => {
-            console.log("Loaded attack data");
-            console.log(data);
+    loadPokemon() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // TODO implement logic that changes active Pokemon based on rules/leads
+            for (let i = 0; i < this.teams.length; i++) {
+                yield this.teams[i].loadTrainers();
+            }
         });
     }
     getTeams() { return this.teams; }

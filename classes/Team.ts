@@ -3,7 +3,8 @@ import { Trainer } from './Trainer';
 export class Team {
     trainers:Array<Trainer>;
 
-    public constructor(numberOfTrainers?:number, pokemonPerTrainer?:number) {    
+    public constructor(numberOfTrainers?:number, pokemonPerTrainer?:number) { 
+        this.trainers = new Array<Trainer>();   
         for (let i = 0; i < numberOfTrainers; i++) {
             this.trainers.push(new Trainer(pokemonPerTrainer));
         }
