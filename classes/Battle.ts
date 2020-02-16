@@ -1,14 +1,21 @@
 import { BattleFrame } from './BattleFrame'
 import { Team } from './Team';
-import { PokemonBuilder } from '../builders/PokemonBuilder';
 import { BattleAttack } from './BattleAttack';
 import { UrpgClientBuilder } from '../builders/UrpgClientBuilder';
 import { UrpgClient } from 'urpg.js';
-import * as request from "request-promise-native";
-import { BattleRules } from './BattleRules';
 
 export class Battle { 
-    rules:BattleRules;
+    static battleTypes:object = [ "Singles", "Doubles", "Triples", "Rotation", 
+                                    "Multi", "Battle Royale", "FFA" ];
+    battleType:string = "Singles";
+
+    static teamTypes:object = [ "Open", "Full", "Preview" ];
+    private teamType:string = "Open";
+
+    static validNumPokemonPerTrainer:object = [ 1, 2, 3, 4, 5, 6 ];
+    private pokemonPerTrainer:number = 1;
+    
+    trainersPerTeam:number;
     teams:Array<Team>;
     currentFrame:BattleFrame;
     frames:Array<BattleFrame>;
@@ -19,64 +26,44 @@ export class Battle {
     public constructor() {
         this.server = UrpgClientBuilder.getInstance();
         this.chooseBattleType();
-        this.loadAttacks();
     }
 
     chooseBattleType() {
-        if (this.battleType != "Battle Royale" && this.battleType != "FFA") {
-        this.numberOfTeams = 2;
-        }
-        else if (this.battleType == "Battle Royale") {
-        this.numberOfTeams = 4;
+        let numberOfTeams = 2;
+
+        if (this.battleType == "Battle Royale") {
+            numberOfTeams = 4;
         }
         else if (this.battleType == "FFA") {
-        this.numberOfTeams = 6;
+            numberOfTeams = 6;
         }
 
-        if (this.battleType != "Multi") {
         this.trainersPerTeam = 1;
-        }
-        else if (this.battleType == "Multi") {
-        this.trainersPerTeam = 2;
+        if (this.battleType == "Multi") {
+            this.trainersPerTeam = 2;
         }
 
         this.teams = new Array();
-        for (let i = 0; i < this.numberOfTeams; i++) {
-            let team = new Team();
-            team.initTrainers(this.trainersPerTeam, this.pokemonPerTrainer);
-            this.teams.push(team);
+        for (let i = 0; i < numberOfTeams; i++) {
+            this.teams.push(new Team(this.trainersPerTeam, this.pokemonPerTrainer));
         }
     }
 
     addFfaTrainer() {
-        let team = new Team();
-        team.initTrainers(this.trainersPerTeam, this.pokemonPerTrainer);
-        this.teams.push(team);
+        this.teams.push(new Team(this.trainersPerTeam, this.pokemonPerTrainer));
     }
 
-    start() {
+    async start() {
         this.currentFrame = new BattleFrame(this);
-        this.setActivePokemon();    
+        await this.loadPokemon();
         this.currentFrame.initialize();
     }
 
-    setActivePokemon() {
+    async loadPokemon() {
         // TODO implement logic that changes active Pokemon based on rules/leads
-
-        this.teams.forEach(team => {
-            team.trainers.forEach(trainer => {
-                
-            })
-        })
-    }
-
-    loadAttacks() {
-        request.get({
-            uri: "https://pokemonurpg.com:8443/attacks"
-        }).then((data) => {
-            console.log("Loaded attack data");
-            console.log(data);
-        })
+        for (let i = 0; i < this.teams.length; i++) {
+            await this.teams[i].loadTrainers();
+        }
     }
 
     getTeams() { return this.teams; }

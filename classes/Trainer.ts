@@ -1,23 +1,22 @@
 import { BattlePokemon } from './BattlePokemon';
+import { PokemonBuilder } from '../builders/PokemonBuilder';
 
 export class Trainer {
     private name:string = "Test";
     pokemon:Array<BattlePokemon> = new Array();
     activePokemon:Array<number> = new Array();
 
-    public constructor() {
-
+    public constructor(numPokemon?:number) {
         // TODO active Pokemon depends on leads
-    }
-
-    initPokemon(numPokemon:number) {
         for (let i = 0; i < numPokemon; i++) {
             this.pokemon.push(new BattlePokemon());
         }
     }
 
-    setPokemon() {
-
+    async loadPokemon() {
+        for (let i = 0; i < this.pokemon.length; i++) {
+            this.pokemon[i] = await new PokemonBuilder(this.pokemon[i].name).build();
+        }
     }
 
     clone() {
@@ -35,11 +34,4 @@ export class Trainer {
 
         return trainer;
     }
-
-    /*trainer['pokemon'].forEach(basePokemon => {
-        let pokemonToAdd = new PokemonBuilder(basePokemon['name']).build();
-        let id = pokemonToAdd.getId();
-        this.activePokemon.push(id);
-        this.pokemon.push(pokemonToAdd);
-    });*/
 }

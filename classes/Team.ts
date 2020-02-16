@@ -1,21 +1,17 @@
 import { Trainer } from './Trainer';
 
 export class Team {
-    trainers:Array<Trainer> = new Array();
+    trainers:Array<Trainer>;
 
-    public constructor() {
+    public constructor(numberOfTrainers?:number, pokemonPerTrainer?:number) {    
+        for (let i = 0; i < numberOfTrainers; i++) {
+            this.trainers.push(new Trainer(pokemonPerTrainer));
+        }
     }
 
-    /* 
-        team['trainers'].forEach(trainer => {
-            this.trainers.push(new Trainer(trainer));
-        });*/
-    initTrainers(numTrainers:number, pokemonPerTrainer:number) {
-        this.trainers = new Array();
-        for (let i = 0; i < numTrainers; i++) {
-            let trainer = new Trainer();
-            trainer.initPokemon(pokemonPerTrainer);
-            this.trainers.push(trainer);
+    async loadTrainers() {
+        for (let i = 0; i < this.trainers.length; i++) {
+            await this.trainers[i].loadPokemon();
         }
     }
 

@@ -10,22 +10,21 @@ export class UrpgClientService {
         }
         return UrpgClientService.instance;
     }
-
-    private constructor() {    }
-
+    
     private server:UrpgClient = UrpgClientBuilder.getInstance();
     private pokemon:Map<string, Pokemon> = new Map();
 
+    private constructor() {    }
+
     public async getPokemon(name:string) {
         name = name.toLowerCase();
-        if (this.pokemon.has(name)) {
-            return this.pokemon.get(name);
-        }
-        else {
+
+        if (!this.pokemon.has(name)) {
             let result = await this.server.pokemon.get(name);
             this.pokemon.set(name, result);
-            return result;
         }
+        
+        return this.pokemon.get(name);
     }
     
 }
